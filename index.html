@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - College Health Center</title>
+    <script defer src="auth.js"></script>
+    <style>
+        :root {
+            --primary-color: #D4ECDD;
+            --secondary-color: #A4C3B2;
+            --accent-color: #5EAAA8;
+            --text-color: #2C3333;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.2);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+        .auth-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 4px 6px 12px var(--shadow-light);
+            text-align: center;
+            width: 350px;
+        }
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 1px solid var(--secondary-color);
+            box-shadow: inset 2px 4px 6px var(--shadow-light);
+        }
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 30px;
+            box-shadow: 2px 4px 10px var(--shadow-light);
+            transition: all 0.3s ease-in-out;
+        }
+        button:hover {
+            background: #4A9D9B;
+            transform: scale(1.05);
+        }
+    </style>
+    <script>
+        function validateLogin() {
+            const email = document.getElementById("collegeId").value;
+            const regNo = document.getElementById("regNo").value;
+            const emailPattern = /^[a-z]+\.[a-z]+20\d{2}@vitstudent\.ac\.in$/;
+            const regNoPattern = /^\d{2}(BRS|BAI|BCE|BPS|BLC|BDS)\d{4}$/;
+            
+            if (!emailPattern.test(email)) {
+                alert("Invalid email!!");
+                return;
+            }
+            
+            if (!regNoPattern.test(regNo)) {
+                alert("Invalid registration number!!");
+                return;
+            }
+            
+            window.location.href = "health.html";
+        }
+    </script>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>Login</h2>
+        <input type="text" id="collegeId" placeholder="Enter VIT Email ID">
+        <input type="text" id="regNo" placeholder="Enter Registration Number">
+        <button onclick="validateLogin()">Login</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Health Center</title>
+    <script defer src="script.js"></script>
+    <style>
+        :root {
+            --primary-color: #D4ECDD;
+            --secondary-color: #A4C3B2;
+            --accent-color: #5EAAA8;
+            --text-color: #2C3333;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-dark: rgba(0, 0, 0, 0.2);
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+        }
+        header {
+            background: var(--secondary-color);
+            color: var(--text-color);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px var(--shadow-dark);
+            margin: 20px;
+            position: relative;
+        }
+        .clock {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+            font-size: 16px;
+        }
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 30px;
+            box-shadow: 2px 4px 10px var(--shadow-light);
+            transition: all 0.3s ease-in-out;
+        }
+        button:hover {
+            background: #4A9D9B;
+            transform: scale(1.05);
+        }
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+        .service-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 4px 6px 12px var(--shadow-light);
+            transition: transform 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 12px;
+            margin-top: 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 2px 4px 10px var(--shadow-light);
+        }
+        .online { background: #8FC1A9; color: white; }
+        .offline { background: #FF6B6B; color: white; }
+        .available { background: #FFD56B; color: black; }
+        .unavailable { background: #D9534F; color: white; }
+        .announcement {
+            margin: 20px;
+            padding: 15px;
+            background: var(--secondary-color);
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 4px 6px 12px var(--shadow-light);
+            display: none;
+        }
+        .contact-faq {
+            padding: 20px;
+            background: white;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px var(--shadow-dark);
+        }
+        textarea {
+            width: 90%;
+            height: 150px;
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Your College Health Center, Just a Click Away!</h1>
+        <span class="clock" id="clock"></span>
+        <button onclick="window.location.href='https://t.me/thisismyfirst1bot'">Chat with the Health Center Bot</button>
+    </header>
+
+    <section class="specialist-announcement">
+        <h2>Today's Specialist</h2>
+        <p id="specialist-info">Checking availability...</p>
+    </section>
+    
+
+    <h2>Services Status</h2>
+    <section class="services">
+        <div class="service-card">
+            <h2>Doctor Consultation</h2>
+            <p>Speak with a doctor for medical advice.</p>
+            <span id="doctorStatus" class="status">Checking...</span>
+        </div>
+        <div class="service-card">
+            <h2>Emergency Ambulance</h2>
+            <p>Get quick emergency response.</p>
+            <span id="ambulanceStatus" class="status">Checking...</span>
+        </div>
+        <div class="service-card">
+            <h2>Mental Health Support</h2>
+            <p>Talk to a counselor for support.</p>
+            <span id="counselorStatus" class="status">Checking...</span>
+        </div>
+        <div class="service-card">
+            <h2>Food & Diet Assistance</h2>
+            <p>Get dietary advice from the food warden.</p>
+            <span id="foodStatus" class="status">Checking...</span>
+        </div>
+    </section>
+
+    <section>
+        <h1>Prescription to Google Calendar</h1>
+        <p>Enter your prescription:</p>
+        <textarea id="prescriptionInput" placeholder="Medicine: ORS&#10;Days: 3&#10;Timings: Morning Afternoon Night"></textarea>
+        <br>
+        <button onclick="generateICS()">Generate ICS File</button>
+    </section>
+
+    <section class="contact-faq">
+        <h2>Emergency Contacts</h2>
+        <ul>
+            <li>Ambulance: 123-456-7890</li>
+            <li>Doctor: 098-765-4321</li>
+            <li>Counselor: 111-222-3333</li>
+        </ul>
+        
+        <h2>FAQs</h2>
+        <p><strong>How can I book an appointment?</strong> Use the Telegram bot to schedule one.</p>
+        <p><strong>How fast is emergency response?</strong> Usually within 10 minutes.</p>
+    </section>
+
+    <script>
+        function generateICS() {
+            let input = document.getElementById("prescriptionInput").value;
+            let lines = input.split("\n");
+            let medicines = [];
+            let currentMed = {};
+
+            lines.forEach(line => {
+                if (line.startsWith("Medicine: ")) {
+                    if (Object.keys(currentMed).length > 0) medicines.push(currentMed);
+                    currentMed = { name: line.replace("Medicine: ", "").trim() };
+                } else if (line.startsWith("Days: ")) {
+                    currentMed.days = parseInt(line.replace("Days: ", "").trim(), 10);
+                } else if (line.startsWith("Timings: ")) {
+                    currentMed.timings = line.replace("Timings: ", "").trim().split(" ");
+                }
+            });
+            if (Object.keys(currentMed).length > 0) medicines.push(currentMed);
+
+            let now = new Date();
+            let startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0);
+            let timeMap = { "Morning": 9, "Afternoon": 13, "Night": 20 };
+
+            let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Prescription Reminder//EN\nCALSCALE:GREGORIAN\n";
+
+            medicines.forEach(med => {
+                for (let i = 0; i < med.days; i++) {
+                    med.timings.forEach(time => {
+                        let eventDate = new Date(startDate);
+                        eventDate.setDate(eventDate.getDate() + i);
+                        eventDate.setHours(timeMap[time], 0, 0);
+
+                        let dtStart = formatICSDate(eventDate);
+                        let dtEnd = formatICSDate(new Date(eventDate.getTime() + (30 * 60 * 1000))); // 30 mins duration
+                        let uid = `${eventDate.getTime()}-${Math.random()}@medicine-reminder.com`; // Unique ID for every event
+
+                        icsContent += `BEGIN:VEVENT\n`;
+                        icsContent += `UID:${uid}\n`;
+                        icsContent += `DTSTAMP:${dtStart}\n`;
+                        icsContent += `SUMMARY:Take ${med.name}\n`;
+                        icsContent += `DTSTART:${dtStart}\n`;
+                        icsContent += `DTEND:${dtEnd}\n`;
+                        icsContent += `DESCRIPTION:Take your medicine - ${med.name}\n`;
+                        icsContent += `SEQUENCE:0\n`;
+                        icsContent += `STATUS:CONFIRMED\n`;
+                        icsContent += `TRANSP:OPAQUE\n`;
+                        icsContent += `BEGIN:VALARM\n`;
+                        icsContent += `ACTION:DISPLAY\n`;
+                        icsContent += `DESCRIPTION:Reminder to take ${med.name}\n`;
+                        icsContent += `TRIGGER:-PT10M\n`;
+                        icsContent += `END:VALARM\n`;
+                        icsContent += `END:VEVENT\n`;
+                    });
+                }
+            });
+
+            icsContent += "END:VCALENDAR";
+
+            let blob = new Blob([icsContent], { type: "text/calendar" });
+            let link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "prescription_reminders.ics";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function formatICSDate(date) {
+            let y = date.getUTCFullYear();
+            let m = String(date.getUTCMonth() + 1).padStart(2, "0");
+            let d = String(date.getUTCDate()).padStart(2, "0");
+            let h = String(date.getUTCHours()).padStart(2, "0");
+            let min = String(date.getUTCMinutes()).padStart(2, "0");
+            return `${y}${m}${d}T${h}${min}00Z`;
+        }
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, "0");
+            document.getElementById("clock").innerText = `${hours}:${minutes}`;
+            
+            // Doctor Consultation: 9 AM - 5 PM
+            document.getElementById("doctorStatus").className = (hours >= 8 && hours < 22) ? "status online" : "status offline";
+            document.getElementById("doctorStatus").innerText = (hours >= 8 && hours < 22) ? "Online" : "Offline";
+
+            // Ambulance: 24/7 but maintenance at 2 AM - 3 AM
+            document.getElementById("ambulanceStatus").className = (hours === 2) ? "status unavailable" : "status available";
+            document.getElementById("ambulanceStatus").innerText = (hours === 2) ? "Unavailable" : "Available";
+
+            // Mental Health Support: 10 AM - 6 PM
+            document.getElementById("counselorStatus").className = (hours >= 10 && hours < 18) ? "status online" : "status offline";
+            document.getElementById("counselorStatus").innerText = (hours >= 10 && hours < 18) ? "Online" : "Offline";
+
+            // Food & Diet Assistance: Mess hours (7-9 AM, 12-2 PM, 7-9 PM)
+            const foodAvailable = (hours >= 7 && hours < 9) || (hours >= 12 && hours < 14) || (hours >= 19 && hours < 21);
+            document.getElementById("foodStatus").className = foodAvailable ? "status available" : "status unavailable";
+            document.getElementById("foodStatus").innerText = foodAvailable ? "Available" : "Unavailable";
+
+            // Specialist Announcements
+            document.addEventListener("DOMContentLoaded", function () {
+                // Define specialist doctor schedule (change days as needed)
+                const specialists = {
+                    "Monday": "Dr. Raj - Psychiatrist",
+                    "Wednesday": "Dr. Mehta - Orthopedic",
+                    "Friday": "Dr. Sharma - Dermatologist",
+                    "Sunday": "Dr. Kapoor - ENT"
+                };
+            
+                // Get the current day
+                const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+            
+                // Get the announcement section
+                const specialistInfo = document.getElementById("specialist-info");
+            
+                // Check if a specialist is available today
+                if (specialists[today]) {
+                    specialistInfo.textContent = `Today's Specialist: ${specialists[today]}`;
+                    specialistInfo.style.color = "green";
+                } else {
+                    specialistInfo.textContent = "No specialist available today.";
+                    specialistInfo.style.color = "red";
+                }
+            });
+            
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
